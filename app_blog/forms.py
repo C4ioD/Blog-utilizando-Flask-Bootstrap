@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import Email, EqualTo, Length, DataRequired, ValidationError
+import email_validator
+from flask_login import current_user
 from app_blog.models import Usuario
 
 class Formlogin(FlaskForm):
@@ -9,14 +12,21 @@ class Formlogin(FlaskForm):
   botao_submit_login = SubmitField('Entrar')
   lembrar_user = BooleanField('Lembrar Senha')
 
-  def validade_login(self, email):
-    usuario = Usuario.query.filter_by(email=email.data).first()
-    if usuario:
-      pass
-    else:
-      raise ValidationError('Conta não cadastrada')
+class FormEditarPerfil(FlaskForm):
+  username = StringField('Nome do Usuario', validators=[DataRequired(message='Campo obrigatório')])
+  email = StringField('E-mail', validators=[DataRequired(),Email()])
+  foto_perfil = FileField('Atualizar Foto de Perfil', validators=[FileAllowed(['jpg','png'])])
+  botao_submit_edit_login = SubmitField('Salvar')
+  
+  def validate_email (self, email):
+      usuario = Usuario.query.filter_by(email=email.data).first()
+      if usuario:
+        raise ValidationError ('E-mail já cadastrado')
 
-
+  def validate_username(self, username):
+      usuario = Usuario.query.filter_by(username= username.data).first()
+      if usuario:
+        raise ValidationError('Usuario já cadastrado. Insira um novo')
   
 
 class FormCriarConta(FlaskForm):

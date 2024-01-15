@@ -10,10 +10,15 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{url_for('static', filename='main.css')}}"
+    />
     {% block head %} {% endblock %}
   </head>
   <body>
-    <div class="container">
+    <div>
       {%include "navbar.html" %} {% with mensagens =
       get_flashed_messages(with_categories = true) %} {%if mensagens %} {% for
       categoria, mensagem in mensagens %}
