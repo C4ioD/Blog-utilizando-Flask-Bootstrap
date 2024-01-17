@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import Email, EqualTo, Length, DataRequired, ValidationError
 import email_validator
 from flask_login import current_user
@@ -17,7 +17,12 @@ class FormEditarPerfil(FlaskForm):
   email = StringField('E-mail', validators=[DataRequired(),Email()])
   foto_perfil = FileField('Atualizar Foto de Perfil', validators=[FileAllowed(['jpg','png'])])
   botao_submit_edit_login = SubmitField('Salvar')
-  
+  bo_python = BooleanField('Python')
+  bo_html = BooleanField('HTML')
+  bo_css = BooleanField('CSS')
+  bo_flask = BooleanField('Flask')
+  bo_bootstrap = BooleanField('Bootstrap')
+
   def validate_email (self, email):
       usuario = Usuario.query.filter_by(email=email.data).first()
       if usuario:
@@ -45,3 +50,8 @@ class FormCriarConta(FlaskForm):
     usuario = Usuario.query.filter_by(username= username.data).first()
     if usuario:
       raise ValidationError('Usuario já cadastrado. Cadastre-se com outro usuario.')
+
+class FormCriarPost(FlaskForm):
+  titulo = StringField('Titulo do Post', validators=[DataRequired(message='Insira um titulo'), Length(min=2, max=140)])
+  descricao = TextAreaField('Descrição', validators=[DataRequired()])
+  button_post = SubmitField('Criar Post')

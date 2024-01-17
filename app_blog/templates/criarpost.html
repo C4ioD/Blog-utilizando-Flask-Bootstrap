@@ -1,0 +1,36 @@
+{% extends 'base.html' %} {% block body %}
+<div class="container mp-6">
+  <div class="row">
+    <div class="col">
+      <form action="" , method="post" class="border p-3 m-3">
+        {{form_post.csrf_token}}
+        <fildset>
+          <legend>Criar Post</legend>
+          <div class="form-group">
+            {{form_post.titulo.label(class="form-control-label")}} {% if
+            form_post.titulo.errors %} {{ form_post.titulo(class="form-control
+            is-invalid") }}
+            <div class="invalid-feedback">
+              {% for erro in form_post.titulo.errors %} {{ erro }} {% endfor %}
+            </div>
+            {% else %} {{ form_post.titulo(class="form-control")}} {% endif %}
+          </div>
+          <div class="form-group">
+            {{form_post.descricao.label(class="form-control-label")}} {% if
+            form_post.descricao.errors %} {{
+            form_post.descricao(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+              {% for erro in form_post.descricao.errors %} {{ erro }} {% endfor
+              %}
+            </div>
+            {% else %} {{ form_post.descricao(class="form-control")}} {% endif
+            %}
+          </div>
+        </fildset>
+        {{form_post.button_post(class=' btn btn-primary m-2')}}
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

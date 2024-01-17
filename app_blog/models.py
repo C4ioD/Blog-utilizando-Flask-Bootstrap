@@ -14,6 +14,7 @@ class Usuario(db.Model, UserMixin):
   senha = db.Column(db.String, nullable=False)
   foto_perfil = db.Column(db.String, default='default.jpg')
   posts = db.relationship('Post', backref='autor', lazy= True)
+  cursos = db.Column(db.String, nullable = False, default='Não informado')
 
 class Post(db.Model):
   id = db.Column(db.Integer, primary_key = True)
@@ -21,4 +22,3 @@ class Post(db.Model):
   titulo = db.Column(db.String, nullable = False)
   descricao = db.Column(db.String, nullable = False)
   data_criacao = db.Column(db.DateTime, nullable= False , default= datetime.utcnow)
-  cursos = db.Column(db.String, nullable = False, default='Não informado')

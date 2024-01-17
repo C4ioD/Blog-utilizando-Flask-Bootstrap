@@ -1,6 +1,6 @@
 
 from app_blog import app, db , bcrypt
-from app_blog.forms import Formlogin, FormCriarConta, FormEditarPerfil
+from app_blog.forms import Formlogin, FormCriarConta, FormEditarPerfil, FormCriarPost
 from app_blog.models import Usuario, Post
 from flask import render_template, url_for, request, redirect , flash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -86,16 +86,28 @@ def salvar_imagem(imagem):
 
 
 
+
+
 @app.route('/perfil/editar',methods=['GET','POST'])
 @login_required
 def editar_perfil():
   form_edit_perfil = FormEditarPerfil()
+
+  def atualizar_len(form):
+      lista = []
+      for campo in form:
+        if "bo_" in campo.name:
+          if campo.data:
+            lista.append(campo.label.text)
+      return ";".join(lista)
+  
   if form_edit_perfil.validate_on_submit():
     current_user.username = form_edit_perfil.username.data
     current_user.email = form_edit_perfil.email.data
     if form_edit_perfil.foto_perfil.data:
       nome_imagem = salvar_imagem(form_edit_perfil.foto_perfil.data)
       current_user.foto_perfil = nome_imagem
+    current_user.cursos = atualizar_len(form_edit_perfil)
     db.session.commit()
     flash('Perfil atualizado com sucesso!', 'alert-success')
     return redirect(url_for('perfil'))
@@ -107,8 +119,20 @@ def editar_perfil():
 
 
 
-@app.route('/post/criar')
+@app.route('/post')
+def post():
+  posts = Post.query.all()
+  return render_template('post.html', posts=posts)
+
+@app.route('/post/criar', methods=['GET','POST'])
 @login_required
 def criar_post():
-  pass
+  form_post = FormCriarPost()
+  if form_post.validate_on_submit():
+    post = Post(titulo=form_post.titulo.data, descricao=form_post.descricao.data, autor=current_user)
+    db.session.add(post)
+    db.session.commit()
+    flash('Post criado com Sucesso!', 'alert-success')
+    return redirect(url_for('post'))
+  return render_template('criarpost.html', form_post=form_post)
 

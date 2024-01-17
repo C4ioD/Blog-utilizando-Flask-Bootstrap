@@ -14,16 +14,20 @@
           class="p-2 mt-2 bg-primary d-flex justify-content-between rounded text-white stats"
         >
           <div class="d-flex flex-column">
-            <span class="articles">Cursos</span>
+            <span class="articles">Linguagens</span>
+            {% if "Não informado" in current_user.cursos %}
             <span class="number1">0</span>
+            {% else %}
+            <span class="number1"
+              >{{ current_user.cursos.count(";") + 1 }}</span
+            >
+            {% endif %}
           </div>
-
           <div class="d-flex flex-column">
             <span class="rating">Posts</span>
             <span class="number3">0</span>
           </div>
         </div>
-
         <div class="button mt-2 d-flex flex-row align-items-center">
           <a href="{{url_for('editar_perfil')}}">
             <button class="btn btn-sm btn-primary w-150 ml-2">
@@ -35,5 +39,15 @@
     </div>
   </div>
 </div>
-
+<div class="row justify-content-center" style="text-align: center">
+  <div class="col col-4">
+    {% if "Não informado" not in current_user.cursos %}
+    <strong>Linguagens</strong> <br />
+    {% for linguagen in current_user.cursos.split(";") %}
+    <button type="button" class="btn btn-primary mt-2" disabled>
+      {{ linguagen }}
+    </button>
+    {% endfor %} {% endif %}
+  </div>
+</div>
 {% block form_editar_perfil %} {% endblock %} {% endblock %}

@@ -41,6 +41,14 @@
             <span class="text-danger">{{erro}}</span><br />
             {% endfor %} {% endif %}
           </div>
+          <hr />
+          <p>Linguagens</p>
+          <div class="form-check">
+            {% for campo in form_edit_perfil %} {% if "bo_" in campo.name %} {{
+            campo(class="form-chek-input") }} {{
+            campo.label(class="form-check-label") }} <br />
+            {% endif %} {% endfor %}
+          </div>
         </fildset>
         {{form_edit_perfil.botao_submit_edit_login(class=' btn btn-primary
         m-2')}}
