@@ -2,18 +2,17 @@
 from app_blog import app, db , bcrypt
 from app_blog.forms import Formlogin, FormCriarConta, FormEditarPerfil, FormCriarPost
 from app_blog.models import Usuario, Post
-from flask import render_template, url_for, request, redirect , flash
+from flask import render_template, url_for, request, redirect , flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from PIL import Image
 import secrets
 import os
 
 
+
 lista_usuarios = ['caio','jamila','luiz']
 
-@app.route("/")
-def home():
-  return render_template("home.html")
+
 
 @app.route("/login",methods=['GET','POST'])
 def login():
@@ -117,12 +116,10 @@ def editar_perfil():
   foto_perfil = url_for('static', filename=f'fotos_perfil/{current_user.foto_perfil}')
   return render_template('editarperfil.html', foto_perfil=foto_perfil, form_edit_perfil=form_edit_perfil)
 
-
-
-@app.route('/post')
-def post():
-  posts = Post.query.all()
-  return render_template('post.html', posts=posts)
+@app.route("/")
+def home():
+  posts = Post.query.order_by(Post.id.desc())
+  return render_template("home.html", posts=posts)
 
 @app.route('/post/criar', methods=['GET','POST'])
 @login_required
@@ -133,6 +130,37 @@ def criar_post():
     db.session.add(post)
     db.session.commit()
     flash('Post criado com Sucesso!', 'alert-success')
-    return redirect(url_for('post'))
+    return redirect(url_for('home'))
   return render_template('criarpost.html', form_post=form_post)
 
+
+@app.route('/post/<post_id>', methods=['GET','POST'])
+@login_required
+def exibir_post(post_id):
+  post= Post.query.get(post_id)
+  if current_user == post.autor:
+    form = FormCriarPost()
+    if request.method == 'GET':
+      form.titulo.data = post.titulo
+      form.descricao.data = post.descricao
+    else:
+      post.titulo = form.titulo.data
+      post.descricao = form.descricao.data
+      db.session.commit()
+      flash('Post editado com Sucesso!' , 'alert-success')
+      return(redirect(url_for('home')))
+  else:
+    form = None
+  return render_template('post.html', post=post, form=form)
+
+@app.route("/post/<post_id>/excluir", methods=['GET','POST'])
+@login_required
+def excluir_post(post_id):
+  post= Post.query.get(post_id)
+  if current_user == post.autor:
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post Excluido com Sucesso', 'alert-danger')
+    return redirect(url_for('home'))
+  else:
+    abort(403)
